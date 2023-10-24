@@ -1,0 +1,9 @@
+<Project Sdk="Godot.NET.Sdk/4.1.2">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>Gameoff2023</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="addons\GodotInk\GodotInk.props" />
+</Project>

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bhha7gpqqq80v"]
+
+[ext_resource type="Script" path="res://examples/ink/TestInkIntegration.cs" id="1_rugo8"]
+[ext_resource type="Resource" uid="uid://cmt625niw18y5" path="res://examples/ink/stories/TheIntercept.ink" id="2_onak1"]
+
+[node name="Test Ink Integration" type="VBoxContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_rugo8")
+story = ExtResource("2_onak1")
