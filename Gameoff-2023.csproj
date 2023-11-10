@@ -4,6 +4,9 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>Gameoff2023</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="content\stories\test\" />
+  </ItemGroup>
 
   <Import Project="addons\GodotInk\GodotInk.props" />
 </Project>
