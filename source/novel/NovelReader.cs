@@ -28,41 +28,53 @@ public partial class NovelReader : VBoxContainer
 		// Display the next line.
 		string nextLine = story.Continue();
 		AddLine(nextLine);
-
+		
 		if (!story.CanContinue)
 		{
 			// If we have choices, show them.
 			if (story.CurrentChoices.Count > 0)
-			{
+			{ 
 				// Check for special choice flows.
-				
-				
 				AddChoices(story.CurrentChoices);
 			}
 			else
 			{
 				// The story can't continue, but we don't have choices. Assume that this is the end of the story.
-				AddLine("End of story reached.");
+				Label endOfLine = new() { Text = "End of story reached." };
+				AddChild(endOfLine);
 			}
-		}
-		else
-		{
-			// TEMP: add a button to manually advance the story
-			Button TEMP_advanceButton = new() { Text = "continue..." };
-			TEMP_advanceButton.Pressed += delegate
-			{
-				TEMP_advanceButton.QueueFree();
-				Advance();
-			};
-			
-			AddChild(TEMP_advanceButton);
 		}
 	}
 
 	private void AddLine(string text)
 	{
-		Label content = new() { Text = text };
+		NovelTextBlock content = new() { Text = text };
 		AddChild(content);
+		
+		content.Advanced += OnTextBlockAdvanced;
+		content.GrabFocus();
+	}
+
+	private void OnTextBlockAdvanced()
+	{
+		if (story.CanContinue)
+		{
+			Advance();
+		}
+		else
+		{
+			// If the story can't continue, it's because we're either waiting for the user to select a choice or we're
+			//   at the end of the story. Attempt to pick the first focusable item on the list.
+			foreach (var node in GetChildren())
+			{
+				Control child = (Control)node;
+				if (child.FocusMode == FocusModeEnum.All)
+				{
+					child.GrabFocus();
+					break;
+				}
+			}
+		}
 	}
 
 	private void AddChoices(IEnumerable<InkChoice> choices)
