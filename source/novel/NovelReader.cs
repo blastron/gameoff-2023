@@ -10,12 +10,38 @@ public partial class NovelReader : VBoxContainer
 	[Export] private InkStory TEMP_Story;
 
 	private InkStory story => TEMP_Story;
+	
+	public NovelReader() : base()
+	{
+		FocusMode = FocusModeEnum.All;
+	}
 
 	public override void _Ready()
 	{
 		story.BindExternalFunction("clear_screen", ClearScreen);
 		
 		Advance();
+	}
+
+	public override void _GuiInput(InputEvent inputEvent)
+	{
+		if ((inputEvent is InputEventMouseButton mouseEvent && mouseEvent.Pressed) ||
+		    inputEvent.IsActionPressed("ui_select") || inputEvent.IsActionPressed("ui_accept"))
+		{
+			Control firstFocusable = GetFirstFocusableChild();
+			if (firstFocusable is NovelTextBlock textBlock)
+			{
+				textBlock.Advance();
+			}
+		}
+		else if (inputEvent.IsActionPressed("ui_focus_next") || inputEvent.IsActionPressed("ui_focus_prev") ||
+		         inputEvent.IsActionPressed("ui_left") || inputEvent.IsActionPressed("ui_right") ||
+		         inputEvent.IsActionPressed("ui_up") || inputEvent.IsActionPressed("ui_down"))
+		{
+			Control firstFocusable = GetFirstFocusableChild();
+			firstFocusable?.GrabFocus();
+			AcceptEvent();
+		}
 	}
 
 	private void Advance()
@@ -65,15 +91,8 @@ public partial class NovelReader : VBoxContainer
 		{
 			// If the story can't continue, it's because we're either waiting for the user to select a choice or we're
 			//   at the end of the story. Attempt to pick the first focusable item on the list.
-			foreach (var node in GetChildren())
-			{
-				Control child = (Control)node;
-				if (child.FocusMode == FocusModeEnum.All)
-				{
-					child.GrabFocus();
-					break;
-				}
-			}
+			Control firstFocusable = GetFirstFocusableChild();
+			firstFocusable?.GrabFocus();
 		}
 	}
 
@@ -99,5 +118,19 @@ public partial class NovelReader : VBoxContainer
 	{
 		// Mark all children for deletion at end of frame.
 		foreach (var child in GetChildren()) child.QueueFree();
+	}
+
+	private Control GetFirstFocusableChild()
+	{
+		foreach (var node in GetChildren())
+		{
+			Control child = (Control)node;
+			if (child?.FocusMode == FocusModeEnum.All)
+			{
+				return child;
+			}
+		}
+
+		return null;
 	}
 }

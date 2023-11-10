@@ -12,16 +12,12 @@ public partial class NovelTextBlock : Label
 	}
 
 	public event Action Advanced;
-	
+
 	public override void _GuiInput(InputEvent inputEvent)
 	{
 		if (inputEvent.IsActionPressed("ui_select") || inputEvent.IsActionPressed("ui_accept"))
 		{
-			// A block that's been advanced past is no longer focusable.
-			FocusMode = FocusModeEnum.None;
-			AcceptEvent();
-			
-			Advanced?.Invoke();
+			Advance();
 		}
 		else if (inputEvent.IsActionPressed("ui_focus_next") || inputEvent.IsActionPressed("ui_focus_prev") ||
 			inputEvent.IsActionPressed("ui_left") || inputEvent.IsActionPressed("ui_right") ||
@@ -46,5 +42,14 @@ public partial class NovelTextBlock : Label
 				}
 				break;
 		}
+	}
+
+	public void Advance()
+	{
+		// A block that's been advanced past is no longer focusable.
+		FocusMode = FocusModeEnum.None;
+		AcceptEvent();
+			
+		Advanced?.Invoke();
 	}
 }
