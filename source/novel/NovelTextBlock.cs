@@ -9,15 +9,17 @@ public partial class NovelTextBlock : Label
 	public NovelTextBlock() : base()
 	{
 		FocusMode = FocusModeEnum.All;
+		AutowrapMode = TextServer.AutowrapMode.WordSmart;
 	}
 
-	public event Action Advanced;
+	public event Action<bool> Advanced;
 
 	public override void _GuiInput(InputEvent inputEvent)
 	{
 		if (inputEvent.IsActionPressed("ui_select") || inputEvent.IsActionPressed("ui_accept"))
 		{
-			Advance();
+			AcceptEvent();
+			Advance(false);
 		}
 		else if (inputEvent.IsActionPressed("ui_focus_next") || inputEvent.IsActionPressed("ui_focus_prev") ||
 			inputEvent.IsActionPressed("ui_left") || inputEvent.IsActionPressed("ui_right") ||
@@ -28,28 +30,10 @@ public partial class NovelTextBlock : Label
 		}
 	}
 
-	public override void _Notification(int notificationCode)
-	{
-		switch ((long)notificationCode)
-		{
-			case NotificationFocusEnter:
-				Text = ">" + Text;
-				break;
-			case NotificationFocusExit:
-				while (Text.StartsWith(">"))
-				{
-					Text = Text.Remove(0,1);
-				}
-				break;
-		}
-	}
-
-	public void Advance()
+	public void Advance(bool fromClick)
 	{
 		// A block that's been advanced past is no longer focusable.
 		FocusMode = FocusModeEnum.None;
-		AcceptEvent();
-			
-		Advanced?.Invoke();
+		Advanced?.Invoke(fromClick);
 	}
 }
