@@ -64,18 +64,7 @@ public partial class NovelReader : Control
 		
 		if (!story.CanContinue)
 		{
-			// If we have choices, show them.
-			if (story.CurrentChoices.Count > 0)
-			{ 
-				// Check for special choice flows.
-				AddChoices(story.CurrentChoices);
-			}
-			else
-			{
-				// The story can't continue, but we don't have choices. Assume that this is the end of the story.
-				Label endOfLine = new() { Text = "End of story reached.", Theme = elementTheme };
-				StoryContainer.AddChild(endOfLine);
-			}
+
 		}
 	}
 
@@ -83,9 +72,26 @@ public partial class NovelReader : Control
 	{
 		NovelTextBlock content = new() { Text = text, Theme = elementTheme };
 		StoryContainer.AddChild(content);
-		
+
+		content.Completed += OnTextBlockCompleted;
 		content.Advanced += OnTextBlockAdvanced;
 		content.GrabFocus();
+	}
+
+	private void OnTextBlockCompleted(bool obj)
+	{
+		// If we have choices, show them.
+		if (story.CurrentChoices.Count > 0)
+		{
+			// Check for special choice flows.
+			AddChoices(story.CurrentChoices);
+		}
+		else if (!story.CanContinue)
+		{
+			// The story can't continue, but we don't have choices. Assume that this is the end of the story.
+			Label endOfLine = new() { Text = "End of story reached.", Theme = elementTheme };
+			StoryContainer.AddChild(endOfLine);
+		}
 	}
 
 	private void OnTextBlockAdvanced(bool bWasClick)
