@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using GodotInk;
 using Ink.Parsed;
@@ -8,26 +9,22 @@ namespace Gameoff2023.source.novel;
 
 public partial class NovelReader : Control
 {
-	[Export] private InkStory TEMP_Story;
+	[Export] private Theme? elementTheme;
 
-	[Export] private Theme elementTheme;
-
-	private InkStory story => TEMP_Story;
-
-	private VBoxContainer StoryContainer => GetNode<VBoxContainer>("StoryContainer");
+	[Export] private VBoxContainer? _textContainer;
+	private VBoxContainer TextContainer => _textContainer ?? throw new ArgumentNullException(nameof(_textContainer));
+	
+	[Export] private VBoxContainer? _choiceContainer;
+	private VBoxContainer ChoiceContainer => _choiceContainer ?? throw new ArgumentNullException(nameof(_choiceContainer));
 
 	public NovelReader() : base()
 	{
 		FocusMode = FocusModeEnum.All;
 	}
-
-	public override void _Ready()
-	{
-		story.BindExternalFunction("clear_screen", ClearScreen);
-		
-		ClearScreen();
-		Advance();
-	}
+	
+	public event Action? TypingCompleted;
+	public event Action? TextAdvanced;
+	public event Action<int>? ChoiceSelected;
 
 	public override void _GuiInput(InputEvent inputEvent)
 	{
@@ -35,121 +32,90 @@ public partial class NovelReader : Control
 		
 		if ( wasClick || inputEvent.IsActionPressed("ui_select") || inputEvent.IsActionPressed("ui_accept"))
 		{
-			Control firstFocusable = GetFirstFocusableChild();
-			if (firstFocusable is NovelTextBlock textBlock)
+			if (ChoiceContainer.GetChildren().Count > 0)
 			{
-				textBlock.Advance(wasClick);
+				// We have option buttons, but they've lost focus. Select the first one.
+				Button? firstOption = ChoiceContainer.GetChildren().First() as Button;
+				firstOption?.GrabFocus();
+			}
+			else if (TextContainer.GetChildren().Count > 0)
+			{
+				NovelTextBlock? lastLine = TextContainer.GetChildren().Last() as NovelTextBlock;
+				if (lastLine != null && lastLine.IsTyping())
+				{
+					lastLine.SkipTyping();
+				}
+				else
+				{
+					TextAdvanced?.Invoke();
+				}
+			}
+			else
+			{
+				// We somehow have no children. As a failsafe, advance the story.
+				TextAdvanced?.Invoke();
 			}
 		}
-		else if (inputEvent.IsActionPressed("ui_focus_next") || inputEvent.IsActionPressed("ui_focus_prev") ||
-				 inputEvent.IsActionPressed("ui_left") || inputEvent.IsActionPressed("ui_right") ||
-				 inputEvent.IsActionPressed("ui_up") || inputEvent.IsActionPressed("ui_down"))
+		else if (inputEvent.IsActionPressed("ui_up") || inputEvent.IsActionPressed("ui_down"))
 		{
-			Control firstFocusable = GetFirstFocusableChild();
-			firstFocusable?.GrabFocus();
+			// We have focus. Check to see if there's an option that we can focus, and if so, focus it. Either way,
+			//   don't allow navigation away from this control.
+			if (ChoiceContainer.GetChildren().Count > 0)
+			{
+				Button? option = (inputEvent.IsActionPressed("ui_up")
+					? ChoiceContainer.GetChildren().Last()
+					: ChoiceContainer.GetChildren().First()) as Button;
+				option?.GrabFocus();
+			}
+			
+			AcceptEvent();
+		}
+		else if (inputEvent.IsActionPressed("ui_focus_next") || inputEvent.IsActionPressed("ui_focus_prev") ||
+				 inputEvent.IsActionPressed("ui_left") || inputEvent.IsActionPressed("ui_right"))
+		{
+			// We have focus. Don't allow navigation away from this control.
+			// TODO: We'll probably want to bubble up ui_focus_prev in order to show an options menu.
 			AcceptEvent();
 		}
 	}
 
-	private void Advance()
+	public virtual void Reset()
 	{
-		if (!story.CanContinue)
-		{
-			throw new InvalidOperationException("Attempted to advance when the story could not continue.");
-		}
-
-		// Display the next line.
-		string nextLine = story.Continue();
-		AddLine(nextLine);
-		
-		if (!story.CanContinue)
-		{
-
-		}
+		ClearScreen();
 	}
 
-	private void AddLine(string text)
+	public void AddLine(string text)
 	{
-		NovelTextBlock content = new() { Text = text, Theme = elementTheme };
-		StoryContainer.AddChild(content);
+		NovelTextBlock textBlock = new() { Text = text, Theme = elementTheme };
+		TextContainer.AddChild(textBlock);
 
-		content.Completed += OnTextBlockCompleted;
-		content.Advanced += OnTextBlockAdvanced;
-		content.GrabFocus();
+		textBlock.TypingCompleted += () => TypingCompleted?.Invoke();
 	}
 
-	private void OnTextBlockCompleted(bool obj)
+	public void AddRawLabel(string text)
 	{
-		// If we have choices, show them.
-		if (story.CurrentChoices.Count > 0)
-		{
-			// Check for special choice flows.
-			AddChoices(story.CurrentChoices);
-		}
-		else if (!story.CanContinue)
-		{
-			// The story can't continue, but we don't have choices. Assume that this is the end of the story.
-			Label endOfLine = new() { Text = "End of story reached.", Theme = elementTheme };
-			StoryContainer.AddChild(endOfLine);
-		}
+		Label endOfLine = new() { Text = text, Theme = elementTheme };
+		TextContainer.AddChild(endOfLine);
 	}
 
-	private void OnTextBlockAdvanced(bool bWasClick)
+	public void AddChoices(IEnumerable<InkChoice> choices)
 	{
-		if (story.CanContinue)
-		{
-			Advance();
-		}
-		else if (!bWasClick)
-		{
-			// If the story can't continue, it's because we're either waiting for the user to select a choice or we're
-			//   at the end of the story. Attempt to pick the first focusable item on the list.
-			// We only want to do this if this event didn't come from a mouse click, so as to avoid highlighting an
-			//   option unexpectedly.
-			Control firstFocusable = GetFirstFocusableChild();
-			firstFocusable?.GrabFocus();
-		}
-	}
-
-	private void AddChoices(IEnumerable<InkChoice> choices)
-	{
-		// Add a spacer to push the choices to the bottom of the screen.
-		StoryContainer.AddSpacer(false);
-		
 		// List all choices as individual buttons.
 		foreach (var choice in choices)
 		{
 			Button choiceButton = new() { Text = choice.Text, Theme = elementTheme };
-			choiceButton.Pressed += delegate { HandleChoice(choice.Index); };
+			choiceButton.Pressed += () => ChoiceSelected?.Invoke(choice.Index);
 
-			StoryContainer.AddChild(choiceButton);
+			ChoiceContainer.AddChild(choiceButton);
 		}
 	}
 
-	private void HandleChoice(int choiceIndex)
-	{
-		TEMP_Story.ChooseChoiceIndex(choiceIndex);
-		ClearScreen();
-		Advance();
-	}
-
-	private void ClearScreen()
+	public void ClearScreen()
 	{
 		// Mark all children for deletion at end of frame.
-		foreach (var child in StoryContainer.GetChildren()) child.QueueFree();
-	}
-
-	private Control GetFirstFocusableChild()
-	{
-		foreach (var node in StoryContainer.GetChildren())
-		{
-			Control child = (Control)node;
-			if (child?.FocusMode == FocusModeEnum.All)
-			{
-				return child;
-			}
-		}
-
-		return null;
+		foreach (var child in TextContainer.GetChildren()) child.QueueFree();
+		foreach (var child in ChoiceContainer.GetChildren()) child.QueueFree();
+		
+		GrabFocus();
 	}
 }

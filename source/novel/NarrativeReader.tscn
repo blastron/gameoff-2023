@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3 uid="uid://bnpaeagflke18"]
+
+[ext_resource type="Script" path="res://source/novel/NarrativeReader.cs" id="1_44yr3"]
+[ext_resource type="Theme" uid="uid://d1m0hdcep18jo" path="res://content/ui/themes/novel text.tres" id="3_2f6qt"]
+
+[node name="Narrative Reader" type="Control" node_paths=PackedStringArray("_textContainer", "_choiceContainer")]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_44yr3")
+elementTheme = ExtResource("3_2f6qt")
+_textContainer = NodePath("ColorRect/StoryContainer/Text Container")
+_choiceContainer = NodePath("ColorRect/StoryContainer/Story Container")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0.133333, 0.152941, 0.215686, 1)
+
+[node name="StoryContainer" type="VBoxContainer" parent="ColorRect"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = -50.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Text Container" type="VBoxContainer" parent="ColorRect/StoryContainer"]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="ColorRect/StoryContainer/Text Container"]
+layout_mode = 2
+theme = ExtResource("3_2f6qt")
+bbcode_enabled = true
+text = "[b]Lorem Ipsum[/b] is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+fit_content = true
+
+[node name="Label2" type="RichTextLabel" parent="ColorRect/StoryContainer/Text Container"]
+layout_mode = 2
+theme = ExtResource("3_2f6qt")
+bbcode_enabled = true
+text = "It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+fit_content = true
+
+[node name="Spacer" type="Control" parent="ColorRect/StoryContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="Story Container" type="VBoxContainer" parent="ColorRect/StoryContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="ColorRect/StoryContainer/Story Container"]
+layout_mode = 2
+theme = ExtResource("3_2f6qt")
+text = "Thanks for the history lesson."
+
+[node name="Button2" type="Button" parent="ColorRect/StoryContainer/Story Container"]
+layout_mode = 2
+theme = ExtResource("3_2f6qt")
+text = "Did you really copy/paste the wrong part of lipsum.com?"
