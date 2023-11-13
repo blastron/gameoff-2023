@@ -5,7 +5,8 @@ using System;
 public partial class TestInkIntegration : VBoxContainer
 {
 	[Export]
-	private InkStory story;
+	private InkStory? _story;
+	private InkStory Story => _story ?? throw new ArgumentNullException(nameof(_story));
 	
 	public override void _Ready()
 	{
@@ -17,15 +18,15 @@ public partial class TestInkIntegration : VBoxContainer
 		foreach (Node child in GetChildren())
 			child.QueueFree();
 
-		Label content = new() { Text = story.ContinueMaximally() };
+		Label content = new() { Text = Story.ContinueMaximally() };
 		AddChild(content);
 
-		foreach (InkChoice choice in story.CurrentChoices)
+		foreach (InkChoice choice in Story.CurrentChoices)
 		{
 			Button button = new() { Text = choice.Text };
 			button.Pressed += delegate
 			{
-				story.ChooseChoiceIndex(choice.Index);
+				Story.ChooseChoiceIndex(choice.Index);
 				ContinueStory();
 			};
 			AddChild(button);
