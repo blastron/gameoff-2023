@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://source/novel/DialogueReader.cs" id="1_x8t7a"]
 [ext_resource type="Theme" uid="uid://d1m0hdcep18jo" path="res://content/ui/themes/novel text.tres" id="3_luv5v"]
 
-[node name="Dialogue Reader" type="Control" node_paths=PackedStringArray("_textContainer", "_choiceContainer")]
+[node name="Dialogue Reader" type="Control" node_paths=PackedStringArray("_speakerNameWrapper", "_speakerName", "_textContainer", "_choiceContainer")]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -12,6 +12,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_x8t7a")
+_speakerNameWrapper = NodePath("Speaker Name Wrapper")
+_speakerName = NodePath("Speaker Name Wrapper/MarginContainer/Speaker Name")
 elementTheme = ExtResource("3_luv5v")
 _textContainer = NodePath("ColorRect/StoryContainer/Text Container")
 _choiceContainer = NodePath("ColorRect/StoryContainer/Choice Container")
@@ -67,3 +69,28 @@ text = "Thanks for the history lesson."
 layout_mode = 2
 theme = ExtResource("3_luv5v")
 text = "Did you really copy/paste the wrong part of lipsum.com?"
+
+[node name="Speaker Name Wrapper" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = -370.0
+offset_right = 174.0
+offset_bottom = -306.0
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Speaker Name Wrapper"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Speaker Name" type="RichTextLabel" parent="Speaker Name Wrapper/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("3_luv5v")
+text = "Pidgeon"
+fit_content = true
+autowrap_mode = 0

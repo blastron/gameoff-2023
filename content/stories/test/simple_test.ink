@@ -8,25 +8,33 @@ Etiam molestie eget turpis ut imperdiet. Mauris semper orci ex, non porttitor ma
 
 ~ clear_screen()
 
-Morbi auctor justo ac lorem scelerisque ullamcorper.
-
-Aliquam condimentum nunc ac augue congue placerat.
-
-~ clear_screen()
-
 [b]Nulla facilisi.[/b]
 
 ~ dialogue_mode()
 
-"Mauris justo est, pulvinar eget sagittis fringilla, rhoncus at nisi. Maecenas finibus sapien et orci mollis, vel auctor libero aliquet?"
+~ set_speaker("")
 
-~ clear_screen()
+Cras sit amet arcu metus. Donec non ipsum ac quam pretium rutrum.
 
-You ponder your options.
+~ set_speaker("Tellus")
+
+"Mauris justo est? Pulvinar eget sagittis fringilla, rhoncus at nisi. Maecenas finibus sapien et orci mollis, vel auctor libero aliquet."
+
+~ set_speaker("Aliquam")
+
+"Nam volutpat tincidunt, Tellus, sit amet auctor libero elementum eu."
+
+"Etiam nec malesuada quam."
+
+~ set_speaker("")
+
+Donec scelerisque purus arcu, vitae eleifend justo sollicitudin eu.
 
 *   [Pellentesque et lorem at libero tincidunt pretium.]
-    Pellentesque et lorem at libero tincidunt pretium. Cras sit amet arcu metus. Donec non ipsum ac quam pretium rutrum. In justo ipsum, mollis ac ipsum sit amet, rutrum lobortis nisi.
-*   [Nam volutpat tincidunt tellus, sit amet auctor libero elementum eu.]
-    Nam volutpat tincidunt tellus, sit amet auctor libero elementum eu. Aliquam ligula metus, condimentum in finibus quis, sodales aliquet tellus. Etiam nec malesuada quam.
+    ~ set_speaker("Tellus")
+    "Curabitur mi nisl, dapibus eget risus eget, aliquet tempor eros. Praesent mi leo, imperdiet in eros vel, commodo eleifend ante."
+*   [Proin viverra eu risus vitae consectetur.]
+    Morbi rutrum nibh at laoreet malesuada. Suspendisse lacinia vestibulum lectus, nec aliquam ligula eleifend nec.
             
--   Vestibulum eu magna id magna lacinia lacinia.
+-   ~ set_speaker("")
+Vestibulum eu magna id magna lacinia lacinia.

@@ -47,6 +47,7 @@ public partial class NovelGame : Node2D
 		Story.BindExternalFunction("clear_screen", ClearScreen);
 		Story.BindExternalFunction("narration_mode", () => SetMode(NarrativeMode.Narration));
 		Story.BindExternalFunction("dialogue_mode", () => SetMode(NarrativeMode.Dialogue));
+		Story.BindExternalFunction("set_speaker", (string name) => SetSpeaker(name));
 		
 		Advance();
 	}
@@ -104,6 +105,11 @@ public partial class NovelGame : Node2D
 					throw new ArgumentOutOfRangeException(nameof(newMode), newMode, null);
 			}
 		}
+	}
+	
+	private void SetSpeaker(string name)
+	{
+		ActiveReader.SetSpeaker(name);
 	}
 
 	// Shows the correct reader for the current narrative mode and resets it to a blank state.

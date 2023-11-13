@@ -84,6 +84,11 @@ public partial class NovelReader : Control
 		ClearScreen();
 	}
 
+	public virtual void SetSpeaker(string name)
+	{
+		throw new NotImplementedException();
+	}
+
 	public void AddLine(string text)
 	{
 		NovelTextBlock textBlock = new() { Text = text, Theme = elementTheme };
