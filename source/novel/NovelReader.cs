@@ -84,9 +84,19 @@ public partial class NovelReader : Control
 		ClearScreen();
 	}
 
-	public virtual void SetSpeaker(string name)
+	public virtual void SetSpeakerName(string name)
 	{
-		throw new NotImplementedException();
+		GD.PushError("Attempted to set speaker name in an unsupported context.");
+	}
+
+	public virtual void SetLeftCharacter(string name, string expression)
+	{
+		GD.PushError("Attempted to set left character sprite in an unsupported context.");
+	}
+
+	public virtual void SetRightCharacter(string name, string expression)
+	{
+		GD.PushError("Attempted to set right character sprite in an unsupported context.");
 	}
 
 	public void AddLine(string text)

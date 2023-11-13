@@ -1,9 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://mkp50wt8nrpw"]
+[gd_scene load_steps=9 format=3 uid="uid://mkp50wt8nrpw"]
 
 [ext_resource type="Script" path="res://source/novel/DialogueReader.cs" id="1_x8t7a"]
+[ext_resource type="Resource" uid="uid://cqago8f2go6j" path="res://content/characters/test_tellus/character_test_tellus.tres" id="2_ygxjp"]
+[ext_resource type="Texture2D" uid="uid://cxxdd2gqdukm2" path="res://content/characters/test_tellus/sprites/idle.png" id="3_6lnui"]
 [ext_resource type="Theme" uid="uid://d1m0hdcep18jo" path="res://content/ui/themes/novel text.tres" id="3_luv5v"]
+[ext_resource type="Resource" uid="uid://baeujwnlktvjp" path="res://content/characters/test_aliquam/character_test_aliquam.tres" id="3_whg1x"]
+[ext_resource type="Texture2D" uid="uid://c258h6lr7kkwa" path="res://content/characters/unknown_left.png" id="4_cksdv"]
+[ext_resource type="Texture2D" uid="uid://dapsc6sjxxj30" path="res://content/characters/test_aliquam/sprites/idle.png" id="4_hmupd"]
+[ext_resource type="Texture2D" uid="uid://b7hl5opj7fdkq" path="res://content/characters/unknown_right.png" id="5_07pe3"]
 
-[node name="Dialogue Reader" type="Control" node_paths=PackedStringArray("_speakerNameWrapper", "_speakerName", "_textContainer", "_choiceContainer")]
+[node name="Dialogue Reader" type="Control" node_paths=PackedStringArray("_speakerNameWrapper", "_speakerName", "_leftSpeakerTexture", "_rightSpeakerTexture", "_textContainer", "_choiceContainer")]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -14,9 +20,32 @@ grow_vertical = 2
 script = ExtResource("1_x8t7a")
 _speakerNameWrapper = NodePath("Speaker Name Wrapper")
 _speakerName = NodePath("Speaker Name Wrapper/MarginContainer/Speaker Name")
+_leftSpeakerTexture = NodePath("Left Speaker")
+_rightSpeakerTexture = NodePath("Right Speaker")
+characters = [ExtResource("2_ygxjp"), ExtResource("3_whg1x")]
+unknownLeftSprite = ExtResource("4_cksdv")
+unknownRightSprite = ExtResource("5_07pe3")
 elementTheme = ExtResource("3_luv5v")
 _textContainer = NodePath("ColorRect/StoryContainer/Text Container")
 _choiceContainer = NodePath("ColorRect/StoryContainer/Choice Container")
+
+[node name="Left Speaker" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_6lnui")
+
+[node name="Right Speaker" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_hmupd")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 1
@@ -27,7 +56,7 @@ offset_top = 367.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
-color = Color(0.270588, 0.215686, 0.219608, 1)
+color = Color(0.270588, 0.215686, 0.219608, 0.827451)
 
 [node name="StoryContainer" type="VBoxContainer" parent="ColorRect"]
 clip_contents = true

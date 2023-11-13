@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=8 format=3 uid="uid://cqago8f2go6j"]
+
+[ext_resource type="Script" path="res://source/novel/CharacterData.cs" id="1_1qxxr"]
+[ext_resource type="Script" path="res://source/novel/CharacterSpriteData.cs" id="2_c8lsp"]
+[ext_resource type="Texture2D" uid="uid://cxxdd2gqdukm2" path="res://content/characters/test_tellus/sprites/idle.png" id="3_jhuet"]
+[ext_resource type="Texture2D" uid="uid://bfrjuq4ux2sk5" path="res://content/characters/test_tellus/sprites/talking.png" id="4_d7g2v"]
+[ext_resource type="Texture2D" uid="uid://c6m8f6cvj3dq0" path="res://content/characters/test_tellus/sprites/unknown.png" id="5_44i2w"]
+
+[sub_resource type="Resource" id="Resource_xt07s"]
+script = ExtResource("2_c8lsp")
+expression = "idle"
+sprite = ExtResource("3_jhuet")
+
+[sub_resource type="Resource" id="Resource_hu8ss"]
+script = ExtResource("2_c8lsp")
+expression = "talking"
+sprite = ExtResource("4_d7g2v")
+
+[resource]
+script = ExtResource("1_1qxxr")
+name = "tellus"
+sprites = Array[Object]([SubResource("Resource_xt07s"), SubResource("Resource_hu8ss")])
+unknownSprite = ExtResource("5_44i2w")

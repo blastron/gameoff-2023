@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=8 format=3 uid="uid://baeujwnlktvjp"]
+
+[ext_resource type="Script" path="res://source/novel/CharacterData.cs" id="1_j4ptf"]
+[ext_resource type="Script" path="res://source/novel/CharacterSpriteData.cs" id="2_gilxi"]
+[ext_resource type="Texture2D" uid="uid://dapsc6sjxxj30" path="res://content/characters/test_aliquam/sprites/idle.png" id="3_iuglx"]
+[ext_resource type="Texture2D" uid="uid://cutf3ek4fyexg" path="res://content/characters/test_aliquam/sprites/talking.png" id="4_4nlgw"]
+[ext_resource type="Texture2D" uid="uid://bsioy1015cf0a" path="res://content/characters/test_aliquam/sprites/unknown.png" id="5_7waj4"]
+
+[sub_resource type="Resource" id="Resource_h56t6"]
+script = ExtResource("2_gilxi")
+expression = "idle"
+sprite = ExtResource("3_iuglx")
+
+[sub_resource type="Resource" id="Resource_44l5s"]
+script = ExtResource("2_gilxi")
+expression = "talking"
+sprite = ExtResource("4_4nlgw")
+
+[resource]
+script = ExtResource("1_j4ptf")
+name = "aliquam"
+sprites = Array[Object]([SubResource("Resource_h56t6"), SubResource("Resource_44l5s")])
+unknownSprite = ExtResource("5_7waj4")

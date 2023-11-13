@@ -18,12 +18,11 @@ public partial class NovelGame : Node2D
 
 	private enum NarrativeMode
 	{
-		None,
 		Narration,
 		Dialogue
 	}
 
-	private NarrativeMode currentMode = NarrativeMode.None;
+	private NarrativeMode currentMode = NarrativeMode.Narration;
 
 	private NovelReader ActiveReader
 	{
@@ -47,8 +46,11 @@ public partial class NovelGame : Node2D
 		Story.BindExternalFunction("clear_screen", ClearScreen);
 		Story.BindExternalFunction("narration_mode", () => SetMode(NarrativeMode.Narration));
 		Story.BindExternalFunction("dialogue_mode", () => SetMode(NarrativeMode.Dialogue));
-		Story.BindExternalFunction("set_speaker", (string name) => SetSpeaker(name));
+		Story.BindExternalFunction("speaker_name", (string name) => SetSpeakerName(name));
+		Story.BindExternalFunction("left_character", (string name, string expression) => SetLeftCharacter(name, expression));
+		Story.BindExternalFunction("right_character", (string name, string expression) => SetRightCharacter(name, expression));
 		
+		PrepareReader();
 		Advance();
 	}
 
@@ -78,6 +80,7 @@ public partial class NovelGame : Node2D
 		ClearScreen();
 		Advance();
 	}
+	
 	private void Advance()
 	{
 		if (!Story.CanContinue && AtEndOfStory())
@@ -107,9 +110,19 @@ public partial class NovelGame : Node2D
 		}
 	}
 	
-	private void SetSpeaker(string name)
+	private void SetSpeakerName(string name)
 	{
-		ActiveReader.SetSpeaker(name);
+		ActiveReader.SetSpeakerName(name);
+	}
+
+	private void SetLeftCharacter(string name, string expression)
+	{
+		ActiveReader.SetLeftCharacter(name, expression);
+	}
+
+	private void SetRightCharacter(string name, string expression)
+	{
+		ActiveReader.SetRightCharacter(name, expression);
 	}
 
 	// Shows the correct reader for the current narrative mode and resets it to a blank state.
