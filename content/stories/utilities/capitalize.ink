@@ -7,10 +7,6 @@ CONST START = "^^"
 LIST letters = (a), (b), (c), (d), (e), (f), (g), (h), (i), (j), (k), (l), (m), (n), (o), (p), (q), (r), (s), (t), (u), (v), (w), (x), (y), (z), /*
     */ A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 
-Here is an example of the word "hello" capitalised: {capitalise_start("hello")}
-Here is an example of the word "yay" shouted: {capitalise_whole("yay")}
-
-
 /*
     Capitalises the first letter of a word made of ASCII English letters.
     Will cut off any word at the first punctuation.
