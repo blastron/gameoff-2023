@@ -11,6 +11,7 @@ public partial class NovelTextBlock : RichTextLabel
 	public NovelTextBlock() : base()
 	{
 		FocusMode = FocusModeEnum.None;
+		MouseFilter = MouseFilterEnum.Pass;
 		
 		AutowrapMode = TextServer.AutowrapMode.WordSmart;
 		FitContent = true;
