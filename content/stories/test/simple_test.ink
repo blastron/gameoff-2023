@@ -20,7 +20,6 @@ Cras sit amet arcu metus. Donec non ipsum ac quam pretium rutrum.
 
 ~ speaker_name("Tellus")
 ~ left_character("tellus", "talking")
-
 "Mauris justo est? Pulvinar eget sagittis fringilla, rhoncus at nisi. Maecenas finibus sapien et orci mollis, vel auctor libero aliquet."
 
 ~ speaker_name("Aliquam")
@@ -34,7 +33,7 @@ Cras sit amet arcu metus. Donec non ipsum ac quam pretium rutrum.
 ~ speaker_name("")
 ~ right_character("aliquam", "idle")
 
-Donec scelerisque purus arcu, vitae eleifend justo sollicitudin eu.
+Donec [color=red]scelerisque[/color] purus arcu, vitae eleifend justo sollicitudin eu.
 
 *   [Pellentesque et lorem at libero tincidunt pretium.]
     ~ speaker_name("Tellus")

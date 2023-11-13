@@ -63,7 +63,7 @@ public partial class DialogueReader : NovelReader
 		SetCharacter(name, expression, RightSpeakerTexture, false);
 	}
 
-	private void SetCharacter(string name, string expression, TextureRect texture, bool leftSide)
+	private void SetCharacter(string name, string expression, TextureRect texture, bool isLeftSide)
 	{
 		if (name == "")
 		{
@@ -78,7 +78,12 @@ public partial class DialogueReader : NovelReader
 			{
 				continue;
 			}
+
+			// If this character's sprites were authored for the other side of the screen, flip them to the correct one.
+			texture.FlipH = isLeftSide != character.isLeftSprite;
 			
+			// Look through the list of sprites configured on the character to find one that matches the given
+			//   expression.
 			foreach (CharacterSpriteData sprite in character.sprites)
 			{
 				if (!sprite.expression.Equals(expression, StringComparison.OrdinalIgnoreCase))
@@ -90,6 +95,7 @@ public partial class DialogueReader : NovelReader
 				return;
 			}
 			
+			// Couldn't find the expression. Show the fallback sprite.
 			GD.PushError("Couldn't find expression " + expression + " for character " + name + ".");
 			texture.Texture = character.unknownSprite;
 			return;
@@ -97,6 +103,7 @@ public partial class DialogueReader : NovelReader
 		
 		// Didn't find a matching character.
 		GD.PushError("Couldn't find character data for " + name + ".");
-		texture.Texture = leftSide ? unknownLeftSprite : unknownRightSprite;
+		texture.FlipH = false;
+		texture.Texture = isLeftSide ? unknownLeftSprite : unknownRightSprite;
 	}
 }
