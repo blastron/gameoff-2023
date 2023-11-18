@@ -1,0 +1,14 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3 uid="uid://c7uke8upbxwjt"]
+
+[ext_resource type="Texture2D" uid="uid://bmx0pitnv2nq6" path="res://content/characters/pidgeon/walkaround/placeholder.png" id="1_a5oxk"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_a5oxk")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
