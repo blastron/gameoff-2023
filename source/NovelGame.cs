@@ -1,30 +1,29 @@
 using System;
-using Gameoff2023.source.novel;
 using Godot;
 using GodotInk;
-
-namespace Gameoff2023.source;
 
 public partial class NovelGame : Node2D
 {
 	[Export] private InkStory? _story;
 	[Export] private NarrativeReader? _narrativeReader;
 	[Export] private DialogueReader? _dialogueReader;
+	[Export] private Walkaround? _walkaround;
 	
 	private InkStory Story => _story ?? throw new ArgumentNullException(nameof(_story));
 
 	private bool TEMP_AlreadyShownEndOfStory;
 
 
-	private enum NarrativeMode
+	public enum NarrativeMode
 	{
 		Narration,
-		Dialogue
+		Dialogue,
+		Walkaround
 	}
 
-	private NarrativeMode currentMode = NarrativeMode.Narration;
+	public NarrativeMode currentMode { get; private set; } = NarrativeMode.Narration;
 
-	private NovelReader ActiveReader
+	private NovelReader? ActiveReader
 	{
 		get
 		{
@@ -32,7 +31,7 @@ public partial class NovelGame : Node2D
 			{
 				NarrativeMode.Narration => _narrativeReader ?? throw new ArgumentNullException(nameof(_narrativeReader)),
 				NarrativeMode.Dialogue => _dialogueReader ?? throw new ArgumentNullException(nameof(_dialogueReader)),
-				_ => throw new ArgumentOutOfRangeException()
+				_ => null
 			};
 		}
 	}
@@ -42,10 +41,16 @@ public partial class NovelGame : Node2D
 		// TODO: Validate configuration and quit if things are missing
 		if (_narrativeReader != null) BindReaderEvents(_narrativeReader);
 		if (_dialogueReader != null) BindReaderEvents(_dialogueReader);
+		if (_walkaround != null) BindWalkaroundEvents(_walkaround);
 		
 		Story.BindExternalFunction("clear_screen", ClearScreen);
 		Story.BindExternalFunction("narration_mode", () => SetMode(NarrativeMode.Narration));
 		Story.BindExternalFunction("dialogue_mode", () => SetMode(NarrativeMode.Dialogue));
+		Story.BindExternalFunction("walkaround_mode", (string location, string spawn) =>
+		{
+			SetMode(NarrativeMode.Walkaround);
+			ChangeLocation(location, spawn);
+		});
 		Story.BindExternalFunction("speaker_name", (string name) => SetSpeakerName(name));
 		Story.BindExternalFunction("left_character", (string name, string expression) => SetLeftCharacter(name, expression));
 		Story.BindExternalFunction("right_character", (string name, string expression) => SetRightCharacter(name, expression));
@@ -54,16 +59,34 @@ public partial class NovelGame : Node2D
 		Advance();
 	}
 
+	public bool HasTaggedChoice(string tag)
+	{
+		foreach (InkChoice choice in Story.CurrentChoices)
+		{
+			if (choice.Tags != null && choice.Tags.Contains(tag))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private void BindReaderEvents(NovelReader reader)
 	{
 		reader.TypingCompleted += OnTypingCompleted;
 		reader.TextAdvanced += OnTextAdvanced;
-		reader.ChoiceSelected += OnOptionSelected;
+		reader.ChoiceSelected += OnChoiceSelectedByIndex;
+	}
+
+	private void BindWalkaroundEvents(Walkaround walkaround)
+	{
+		walkaround.ChoiceInteracted += OnChoiceSelectedByTag;
 	}
 
 	private void OnTypingCompleted()
 	{
-		if (Story.CurrentChoices.Count > 0)
+		if (ActiveReader != null && Story.CurrentChoices.Count > 0)
 		{
 			ActiveReader.AddChoices(Story.CurrentChoices);
 		}
@@ -74,13 +97,34 @@ public partial class NovelGame : Node2D
 		Advance();
 	}
 
-	private void OnOptionSelected(int choiceIndex)
+	private void OnChoiceSelectedByIndex(int choiceIndex)
 	{
+		if (choiceIndex < 0 || choiceIndex >= Story.CurrentChoices.Count)
+		{
+			throw new ArgumentOutOfRangeException(nameof(choiceIndex));
+		}
+		
 		Story.ChooseChoiceIndex(choiceIndex);
 		ClearScreen();
 		Advance();
 	}
-	
+
+	private void OnChoiceSelectedByTag(string choiceTag)
+	{
+		for (int choiceIndex = 0; choiceIndex < Story.CurrentChoices.Count; choiceIndex++)
+		{
+			InkChoice choice = Story.CurrentChoices[choiceIndex];
+			if (choice.Tags != null && choice.Tags.Contains(choiceTag))
+			{
+				Story.ChooseChoiceIndex(choiceIndex);
+				Advance();
+				return;
+			}
+		}
+		
+		GD.PushError("Attempted to select choice with tag \"" + choiceTag + "\" but no matching choice was found.");
+	}
+
 	private void Advance()
 	{
 		if (!Story.CanContinue && AtEndOfStory())
@@ -89,8 +133,10 @@ public partial class NovelGame : Node2D
 			return;
 		}
 
+		// Continue the story, then if we have an active reader showing, show the next line. Note that the call to
+		//   Story.Continue() here may change modes, changing (or nulling) ActiveReader in the process.
 		string nextLine = Story.Continue();
-		ActiveReader.AddLine(nextLine);
+		ActiveReader?.AddLine(nextLine);
 	}
 
 	private void SetMode(NarrativeMode newMode)
@@ -104,6 +150,9 @@ public partial class NovelGame : Node2D
 				case NarrativeMode.Dialogue:
 					PrepareReader();
 					break;
+				case NarrativeMode.Walkaround:
+					PrepareWalkaround();
+					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(newMode), newMode, null);
 			}
@@ -112,17 +161,20 @@ public partial class NovelGame : Node2D
 	
 	private void SetSpeakerName(string name)
 	{
-		ActiveReader.SetSpeakerName(name);
+		if (ActiveReader == null) GD.PushError("Attempted to set speaker name while no reader was active.");
+		ActiveReader?.SetSpeakerName(name);
 	}
 
 	private void SetLeftCharacter(string name, string expression)
 	{
-		ActiveReader.SetLeftCharacter(name, expression);
+		if (ActiveReader == null) GD.PushError("Attempted to set visible character while no reader was active.");
+		ActiveReader?.SetLeftCharacter(name, expression);
 	}
 
 	private void SetRightCharacter(string name, string expression)
 	{
-		ActiveReader.SetRightCharacter(name, expression);
+		if (ActiveReader == null) GD.PushError("Attempted to set visible character while no reader was active.");
+		ActiveReader?.SetRightCharacter(name, expression);
 	}
 
 	// Shows the correct reader for the current narrative mode and resets it to a blank state.
@@ -144,13 +196,28 @@ public partial class NovelGame : Node2D
 					"Reader is not available in non-text modes.");
 		}
 		
-		ActiveReader.Reset();
-		ActiveReader.GrabFocus();
+		_walkaround?.Hide();
+		
+		ActiveReader?.Reset();
+		ActiveReader?.GrabFocus();
+	}
+
+	private void PrepareWalkaround()
+	{
+		_walkaround?.Show();
+
+		_dialogueReader?.Hide();
+		_narrativeReader?.Hide();
+	}
+
+	private void ChangeLocation(string location, string spawn)
+	{
+		//throw new NotImplementedException();
 	}
 
 	private void ClearScreen()
 	{
-		ActiveReader.ClearScreen();
+		ActiveReader?.ClearScreen();
 	}
 
 	private bool AtEndOfStory()
@@ -171,10 +238,12 @@ public partial class NovelGame : Node2D
 		{
 			case NarrativeMode.Narration:
 			case NarrativeMode.Dialogue:
-				ActiveReader.AddRawLabel("End of story reached.");
+				ActiveReader?.AddRawLabel("End of story reached.");
 				break;
 			default:
-				throw new ArgumentOutOfRangeException(nameof(currentMode), currentMode, null);
+				SetMode(NarrativeMode.Narration);
+				ActiveReader?.AddRawLabel("End of story reached.");
+				break;
 		}
 	}
 }

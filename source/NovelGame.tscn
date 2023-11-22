@@ -1,17 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://dgomrackh3xil"]
+[gd_scene load_steps=6 format=3 uid="uid://dgomrackh3xil"]
 
 [ext_resource type="Script" path="res://source/NovelGame.cs" id="1_2ovye"]
 [ext_resource type="PackedScene" uid="uid://mkp50wt8nrpw" path="res://source/novel/DialogueReader.tscn" id="2_n7xnu"]
 [ext_resource type="Resource" uid="uid://bqtngoe2tmorx" path="res://content/stories/test/simple_test.ink" id="2_ytsed"]
 [ext_resource type="PackedScene" uid="uid://bnpaeagflke18" path="res://source/novel/NarrativeReader.tscn" id="3_5t30c"]
+[ext_resource type="PackedScene" uid="uid://dxn2mwneqo707" path="res://source/walkaround/Walkaround.tscn" id="3_vltg6"]
 
-[node name="Root Node" type="Node2D" node_paths=PackedStringArray("_narrativeReader", "_dialogueReader")]
+[node name="Root Node" type="Node2D" node_paths=PackedStringArray("_narrativeReader", "_dialogueReader", "_walkaround")]
 script = ExtResource("1_2ovye")
 _story = ExtResource("2_ytsed")
-_narrativeReader = NodePath("Control/Narrative Reader")
-_dialogueReader = NodePath("Control/Dialogue Reader")
+_narrativeReader = NodePath("Camera2D/Control/Narrative Reader")
+_dialogueReader = NodePath("Camera2D/Control/Dialogue Reader")
+_walkaround = NodePath("Walkaround")
 
-[node name="Control" type="Control" parent="."]
+[node name="Walkaround" parent="." instance=ExtResource("3_vltg6")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="Control" type="Control" parent="Camera2D"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,10 +30,10 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Narrative Reader" parent="Control" instance=ExtResource("3_5t30c")]
+[node name="Narrative Reader" parent="Camera2D/Control" instance=ExtResource("3_5t30c")]
 layout_mode = 1
 
-[node name="Dialogue Reader" parent="Control" instance=ExtResource("2_n7xnu")]
+[node name="Dialogue Reader" parent="Camera2D/Control" instance=ExtResource("2_n7xnu")]
 layout_mode = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3

@@ -11,8 +11,8 @@ script = ExtResource("1_c63tl")
 _sprite = NodePath("Sprite")
 _collision = NodePath("Collision")
 
-[node name="Collision" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_i487b")
-
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = ExtResource("2_31bx4")
+
+[node name="Collision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_i487b")

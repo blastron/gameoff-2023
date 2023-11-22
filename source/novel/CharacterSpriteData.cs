@@ -1,7 +1,5 @@
 ﻿using Godot;
 
-namespace Gameoff2023.source.novel;
-
 [GlobalClass]
 public partial class CharacterSpriteData : Resource
 {

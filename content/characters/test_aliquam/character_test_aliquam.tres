@@ -21,3 +21,4 @@ script = ExtResource("1_j4ptf")
 name = "aliquam"
 sprites = Array[Object]([SubResource("Resource_h56t6"), SubResource("Resource_44l5s")])
 unknownSprite = ExtResource("5_7waj4")
+isLeftSprite = false

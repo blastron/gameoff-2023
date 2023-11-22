@@ -1,8 +1,6 @@
 ﻿using System;
 using Godot;
 
-namespace Gameoff2023.source.novel;
-
 // A text block that shows novel text and handles the event.
 public partial class NovelTextBlock : RichTextLabel
 {

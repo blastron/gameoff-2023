@@ -1,9 +1,6 @@
 using System;
 using Godot.Collections;
 using Godot;
-using GodotInk;
-
-namespace Gameoff2023.source.novel;
 
 public partial class DialogueReader : NovelReader
 {
@@ -32,7 +29,7 @@ public partial class DialogueReader : NovelReader
 		LeftSpeakerTexture.Hide();
 		RightSpeakerTexture.Hide();
 	}
-	
+
 	public override void SetSpeakerName(string name)
 	{
 		if (name == SpeakerName.Text)

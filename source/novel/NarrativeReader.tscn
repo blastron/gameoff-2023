@@ -24,7 +24,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
-color = Color(0.133333, 0.152941, 0.215686, 1)
+color = Color(0.133333, 0.152941, 0.215686, 0.392157)
 
 [node name="StoryContainer" type="VBoxContainer" parent="ColorRect"]
 clip_contents = true

@@ -1,8 +1,6 @@
 ﻿using Godot;
 using Godot.Collections;
 
-namespace Gameoff2023.source.novel;
-
 [GlobalClass]
 public partial class CharacterData : Resource
 {

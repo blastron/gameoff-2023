@@ -1,7 +1,15 @@
 INCLUDE ../utilities/external_functions.ink
+INCLUDE test_walkaround.ink
+
 
 
 ~ narration_mode()
+
+This is the test story.
+
+*   [Test walkaround mode.] -> test_walkaround_outside
+*   [Test narration mode.]
+-
 
 [b]Lorem ipsum[/b] dolor sit amet, consectetur adipiscing elit.
 

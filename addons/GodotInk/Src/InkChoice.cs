@@ -12,7 +12,7 @@ public partial class InkChoice : RefCounted
     public string PathStringOnChoice => inner.pathStringOnChoice;
     public string SourcePath => inner.sourcePath;
     public int Index => inner.index;
-    public List<string> Tags => inner.tags;
+    public List<string>? Tags => inner.tags;
 
     private readonly Ink.Runtime.Choice inner;
 

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using GodotInk;
-using Ink.Parsed;
-
-namespace Gameoff2023.source.novel;
 
 public partial class NovelReader : Control
 {
@@ -16,6 +13,9 @@ public partial class NovelReader : Control
 	
 	[Export] private VBoxContainer? _choiceContainer;
 	private VBoxContainer ChoiceContainer => _choiceContainer ?? throw new ArgumentNullException(nameof(_choiceContainer));
+	
+	// The parent game. Could be null if we're running this scene independently of a full game for testing purposes.
+	protected NovelGame? parentGame;
 
 	public NovelReader() : base()
 	{
@@ -25,6 +25,13 @@ public partial class NovelReader : Control
 	public event Action? TypingCompleted;
 	public event Action? TextAdvanced;
 	public event Action<int>? ChoiceSelected;
+
+	public override void _Ready()
+	{
+		base._Ready();
+		
+		parentGame = this.GetTypedParent<NovelGame>();
+	}
 
 	public override void _GuiInput(InputEvent inputEvent)
 	{

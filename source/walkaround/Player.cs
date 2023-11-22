@@ -22,19 +22,8 @@ public partial class Player : Area2D
 	{
 		ScreenSize = GetViewportRect().Size;
 		// Sprite.Play();
-
-		Node? parent = GetParent();
-		while (parent != null)
-		{
-			if (parent is Walkaround castParent)
-			{
-				parentWalkaround = castParent;
-				break;
-			}
-
-			parent = parent.GetParent();
-		}
-
+		
+		parentWalkaround = this.GetTypedParent<Walkaround>();
 		if (parentWalkaround == null)
 		{
 			GD.PushError("Unable to find a parent walkaround.");
@@ -44,6 +33,12 @@ public partial class Player : Area2D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double deltaSeconds)
 	{
+		if (parentWalkaround == null || !parentWalkaround.IsActive())
+		{
+			// Freeze all processing if we're not in walkaround mode.
+			return;
+		}
+		
 		double inputDirection = (Input.IsActionPressed("move_left") ? -1 : 0) +
 								(Input.IsActionPressed("move_right") ? 1 : 0);
 		
@@ -86,9 +81,15 @@ public partial class Player : Area2D
 
 		parentWalkaround.GetWalkingBounds(out left, out right);
 
-		float boxWidth = Collision.Shape.GetRect().Size.X;
-		left += boxWidth / 2;
-		right -= boxWidth / 2;
+		float boxRelativeCenter = Collision.Position.X;
+		if (Sprite.FlipH)
+		{
+			boxRelativeCenter *= -1;
+		}
+		
+		float boxHalfWidth = Collision.Shape.GetRect().Size.X / 2;
+		left -= boxRelativeCenter - boxHalfWidth;
+		right -= boxRelativeCenter + boxHalfWidth;
 
 		return true;
 	}
