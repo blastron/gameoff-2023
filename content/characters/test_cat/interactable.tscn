@@ -18,10 +18,8 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q08i5"]
 size = Vector2(133, 228)
 
-[node name="Test Cat" type="Area2D" node_paths=PackedStringArray("sprite", "_collision")]
+[node name="Test Cat" type="Area2D"]
 script = ExtResource("1_ra3dj")
-sprite = NodePath("cat sprite")
-_collision = NodePath("cat collision")
 
 [node name="cat sprite" type="AnimatedSprite2D" parent="."]
 material = ExtResource("2_m57fm")

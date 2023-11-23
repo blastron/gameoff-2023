@@ -31,11 +31,9 @@ Background = NodePath("Background")
 texture = ExtResource("2_m0m44")
 centered = false
 
-[node name="Tellus" type="Area2D" parent="." node_paths=PackedStringArray("sprite", "_collision")]
+[node name="Tellus" type="Area2D" parent="."]
 position = Vector2(1027, 434)
 script = ExtResource("3_cuthf")
-sprite = NodePath("tellus sprite")
-_collision = NodePath("tellus collision")
 Tag = "talk_shopkeeper"
 metadata/_edit_group_ = true
 
@@ -47,10 +45,9 @@ sprite_frames = SubResource("SpriteFrames_0l7eu")
 [node name="tellus collision" type="CollisionShape2D" parent="Tellus"]
 shape = SubResource("RectangleShape2D_p2mfd")
 
-[node name="Door" type="Area2D" parent="." node_paths=PackedStringArray("_collision")]
+[node name="Door" type="Area2D" parent="."]
 position = Vector2(246, 391)
 script = ExtResource("3_cuthf")
-_collision = NodePath("door collision")
 Tag = "exit_shop"
 
 [node name="door collision" type="CollisionShape2D" parent="Door"]

@@ -20,10 +20,9 @@ centered = false
 position = Vector2(564, 578)
 Tag = "pet_cat"
 
-[node name="Door" type="Area2D" parent="." node_paths=PackedStringArray("_collision")]
+[node name="Door" type="Area2D" parent="."]
 position = Vector2(1470, 526)
 script = ExtResource("4_n1521")
-_collision = NodePath("outdoor door collision")
 Tag = "enter_shop"
 
 [node name="outdoor door collision" type="CollisionShape2D" parent="Door"]

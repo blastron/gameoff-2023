@@ -1,14 +1,16 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Godot.Collections;
 
 public partial class Interactable : Area2D
 {
-	[Export] private AnimatedSprite2D? sprite;
-
-	private CollisionShape2D Collision => _collision ?? throw new ArgumentNullException(nameof(_collision));
-	[Export] private CollisionShape2D? _collision;
-
 	[Export] public string Tag = "";
+
+	private List<AnimatedSprite2D> animatedSprites = new();
+	private List<Sprite2D> staticSprites = new();
+	private List<CollisionShape2D> collisions = new();
 	
 	public event Action? Interacted;
 	
@@ -18,14 +20,32 @@ public partial class Interactable : Area2D
 		set
 		{
 			_highlighted = value;
-
-			if (sprite?.Material is ShaderMaterial shader)
+			
+			foreach (AnimatedSprite2D sprite in animatedSprites)
 			{
-				shader.SetShaderParameter("enabled", _highlighted);
+				if (sprite.Material is ShaderMaterial shader)
+				{
+					shader.SetShaderParameter("enabled", _highlighted);
+				}
+			}
+
+			foreach (Sprite2D sprite in staticSprites)
+			{
+				if (sprite.Material is ShaderMaterial shader)
+				{
+					shader.SetShaderParameter("enabled", _highlighted);
+				}
 			}
 		}
 	}
 	private bool _highlighted;
+
+	public override void _Ready()
+	{
+		animatedSprites = this.GetTypedChildren<AnimatedSprite2D>().ToList();
+		staticSprites = this.GetTypedChildren<Sprite2D>().ToList();
+		collisions = this.GetTypedChildren<CollisionShape2D>().ToList();
+	}
 
 	public void Interact(Player player)
 	{
@@ -35,12 +55,21 @@ public partial class Interactable : Area2D
 	// Tests to see if the given position is within the horizontal bounds of the defined collision.
 	public bool PositionWithinBounds(float xPos)
 	{
-		float boxCenter = Collision.GlobalPosition.X;
-		float boxHalfWidth = Collision.Shape.GetRect().Size.X / 2;
+		float? minLeft = null;
+		float? maxRight = null;
 		
-		float boxLeft = boxCenter - boxHalfWidth;
-		float boxRight = boxCenter + boxHalfWidth;
+		foreach (CollisionShape2D collisionShape in collisions)
+		{
+			float boxCenter = collisionShape.GlobalPosition.X;
+			float boxHalfWidth = collisionShape.Shape.GetRect().Size.X / 2;
+		
+			float boxLeft = boxCenter - boxHalfWidth;
+			float boxRight = boxCenter + boxHalfWidth;
 
-		return xPos >= boxLeft && xPos <= boxRight;
+			minLeft = Math.Min(boxLeft, minLeft ?? boxLeft);
+			maxRight = Math.Max(boxRight, maxRight ?? boxRight);
+		}
+		
+		return xPos >= minLeft && xPos <= maxRight;
 	}
 }
