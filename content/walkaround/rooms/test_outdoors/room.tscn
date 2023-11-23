@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://c7yykc26dj1sr"]
+[gd_scene load_steps=7 format=3 uid="uid://c7yykc26dj1sr"]
 
 [ext_resource type="Script" path="res://source/walkaround/Room.cs" id="1_sy3si"]
 [ext_resource type="Texture2D" uid="uid://bs75i36e1s5v5" path="res://content/walkaround/rooms/test_outdoors/background.png" id="2_y1hyc"]
 [ext_resource type="PackedScene" uid="uid://bleooxcehn1ky" path="res://content/characters/test_cat/interactable.tscn" id="3_k3vys"]
 [ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="4_n1521"]
+[ext_resource type="Script" path="res://source/walkaround/SpawnPoint.cs" id="5_fblg0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4u28j"]
 size = Vector2(148, 274)
@@ -28,3 +29,11 @@ Tag = "enter_shop"
 [node name="outdoor door collision" type="CollisionShape2D" parent="Door"]
 position = Vector2(-5, -6)
 shape = SubResource("RectangleShape2D_4u28j")
+
+[node name="door_shop" type="Node2D" parent="."]
+position = Vector2(1475, 587)
+script = ExtResource("5_fblg0")
+
+[node name="spawn_initial" type="Node2D" parent="."]
+position = Vector2(250, 581)
+script = ExtResource("5_fblg0")

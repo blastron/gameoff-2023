@@ -11,8 +11,9 @@ public partial class Walkaround : Node2D
 	[Export] private Node2D? RoomContainer;
 
 	[Export] private Array<RoomData> rooms = new();
-
+	
 	private Room? currentRoom;
+	public string currentRoomName { get; private set; }
 
 	// The parent game. Could be null if we're running this scene independently of a full game for testing purposes.
 	private NovelGame? parentGame;
@@ -77,6 +78,11 @@ public partial class Walkaround : Node2D
 
 	public void LoadRoom(string roomName)
 	{
+		if (roomName == currentRoomName)
+		{
+			return;
+		}
+		
 		if (rooms.Count == 0)
 		{
 			GD.PushError("No rooms were configured.");
@@ -87,7 +93,8 @@ public partial class Walkaround : Node2D
 		{
 			if (rooms[roomIndex].Name.Equals(roomName, StringComparison.OrdinalIgnoreCase))
 			{
-				GD.Print("Loading room \"" + roomName + "\" at index " + roomIndex + ".");
+				GD.Print("Loading room \"" + roomName + "\".");
+				currentRoomName = roomName;
 				LoadRoom(roomIndex);
 				return;
 			}
@@ -95,6 +102,7 @@ public partial class Walkaround : Node2D
 
 		// Couldn't find the room. As a fallback, load room 0.
 		GD.PushError("Unable to find room with ID \"" + roomName + "\". Falling back to room 0.");
+		currentRoomName = rooms[0].Name;
 		LoadRoom(0);
 	}
 
@@ -107,6 +115,21 @@ public partial class Walkaround : Node2D
 		{
 			(RoomContainer ?? this).AddChild(currentRoom);
 			currentRoom.ChoiceInteracted += OnChoiceInteracted;
+		}
+	}
+
+	public void WarpToPoint(string pointName)
+	{
+		float? pointPos = currentRoom?.GetSpawnLocation(pointName);
+		Player.Position = new Vector2(pointPos ?? Player.Position.X, Player.Position.Y);
+
+		if (pointPos == null)
+		{
+			GD.PushError("Unable to find spawn point with ID \"" + pointName + "\". Not moving.");
+		}
+		else
+		{
+			GD.Print("Jumping to spawn point \"" + pointName + "\".");
 		}
 	}
 

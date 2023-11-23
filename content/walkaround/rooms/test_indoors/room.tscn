@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://c1ctbq2ni33fj"]
+[gd_scene load_steps=10 format=3 uid="uid://c1ctbq2ni33fj"]
 
 [ext_resource type="Script" path="res://source/walkaround/Room.cs" id="1_cg5rk"]
 [ext_resource type="Texture2D" uid="uid://d1casousf1jxe" path="res://content/walkaround/rooms/test_indoors/background.png" id="2_m0m44"]
 [ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="3_cuthf"]
 [ext_resource type="Material" uid="uid://brw17ge6gort3" path="res://source/utilities/outline.tres" id="4_l1r0a"]
 [ext_resource type="Texture2D" uid="uid://bpojtaj80apad" path="res://content/characters/test_tellus/interactable/standing.png" id="5_y702i"]
+[ext_resource type="Script" path="res://source/walkaround/SpawnPoint.cs" id="6_ifwa8"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_0l7eu"]
 animations = [{
@@ -53,3 +54,7 @@ Tag = "exit_shop"
 [node name="door collision" type="CollisionShape2D" parent="Door"]
 position = Vector2(-10.5, 4)
 shape = SubResource("RectangleShape2D_c8kh7")
+
+[node name="door_exit" type="Node2D" parent="."]
+position = Vector2(239, 468)
+script = ExtResource("6_ifwa8")

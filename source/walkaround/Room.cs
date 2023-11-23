@@ -1,9 +1,13 @@
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class Room : Node2D
 {
 	[Export] private Sprite2D? Background;
+
+	private List<SpawnPoint> spawnPoints = new();
 	
 	public float minWalkingBound => 0;
 	public float maxWalkingBound => Background?.GetRect().Size.X ?? 0;
@@ -15,13 +19,25 @@ public partial class Room : Node2D
 
 	public override void _Ready()
 	{
-		foreach (Node child in GetChildren())
+		foreach (Interactable interactable in this.GetTypedChildren<Interactable>())
 		{
-			if (child is Interactable interactable)
+			interactable.Interacted += () => OnInteract(interactable);
+		}
+
+		spawnPoints = this.GetTypedChildren<SpawnPoint>().ToList();
+	}
+
+	public float? GetSpawnLocation(string name)
+	{
+		foreach (SpawnPoint spawnPoint in spawnPoints)
+		{
+			if (spawnPoint.Name == name)
 			{
-				interactable.Interacted += () => OnInteract(interactable);
+				return spawnPoint.GlobalPosition.X;
 			}
 		}
+
+		return null;
 	}
 
 	private void OnInteract(Interactable interactable)

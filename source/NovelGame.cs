@@ -212,7 +212,16 @@ public partial class NovelGame : Node2D
 
 	private void ChangeLocation(string location, string spawn)
 	{
-		_walkaround?.LoadRoom(location);
+		if (_walkaround?.currentRoomName != location)
+		{
+			_walkaround?.LoadRoom(location);
+			_walkaround?.WarpToPoint(spawn);
+		}
+		else
+		{
+			// commenting out because it's spammy
+			//GD.Print("Requested to move to location \"" + location + "\" at point \"" + spawn + "\", but we were already in that room. Skipping teleport.");
+		}
 	}
 
 	private void ClearScreen()
