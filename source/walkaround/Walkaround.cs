@@ -170,7 +170,7 @@ public partial class Walkaround : Node2D
 	private void SelectInteractable()
 	{
 		// TEMP: use player's center to determine location.
-		float interactPosition = Player.Position.X;
+		float interactPosition = Player.InteractPosition;
 
 		Interactable? newTarget = null;
 		if (currentRoom != null)

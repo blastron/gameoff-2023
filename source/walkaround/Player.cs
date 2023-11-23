@@ -4,12 +4,15 @@ using System;
 public partial class Player : Area2D
 {
 	[Export] private double MaxSpeed { get; set; } = 400;
-	
+	[Export] private float interactOffset = 50;
+
 	private AnimatedSprite2D Sprite => _sprite ?? throw new ArgumentNullException(nameof(_sprite));
 	[Export] private AnimatedSprite2D? _sprite;
 
 	private CollisionShape2D Collision => _collision ?? throw new ArgumentNullException(nameof(_collision));
 	[Export] private CollisionShape2D? _collision;
+
+	public float InteractPosition => GlobalPosition.X + (interactOffset * (Sprite.FlipH ? -1 : 1));
 
 	private Walkaround? parentWalkaround;
 
