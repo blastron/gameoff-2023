@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://brw17ge6gort3"]
+
+[ext_resource type="Shader" path="res://source/utilities/outline.gdshader" id="1_loi6q"]
+
+[resource]
+shader = ExtResource("1_loi6q")
+shader_parameter/enabled = false
+shader_parameter/enabled_color = Color(1, 1, 1, 1)
+shader_parameter/disabled_color = Color(1, 1, 1, 0)
+shader_parameter/line_thickness = 3

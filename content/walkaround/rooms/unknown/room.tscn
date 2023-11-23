@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://d1iderst0ij1f"]
+
+[ext_resource type="Script" path="res://source/walkaround/Room.cs" id="1_c00fc"]
+[ext_resource type="Texture2D" uid="uid://d0si7r1xpapo2" path="res://content/walkaround/rooms/unknown/background.png" id="2_8nr68"]
+
+[node name="Unknown Room" type="Node2D" node_paths=PackedStringArray("Background")]
+script = ExtResource("1_c00fc")
+Background = NodePath("Background")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_8nr68")
+centered = false

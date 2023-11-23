@@ -212,7 +212,7 @@ public partial class NovelGame : Node2D
 
 	private void ChangeLocation(string location, string spawn)
 	{
-		//throw new NotImplementedException();
+		_walkaround?.LoadRoom(location);
 	}
 
 	private void ClearScreen()

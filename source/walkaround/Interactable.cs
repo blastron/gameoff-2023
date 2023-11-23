@@ -3,8 +3,7 @@ using System;
 
 public partial class Interactable : Area2D
 {
-	private AnimatedSprite2D Sprite => _sprite ?? throw new ArgumentNullException(nameof(_sprite));
-	[Export] private AnimatedSprite2D? _sprite;
+	[Export] private AnimatedSprite2D? sprite;
 
 	private CollisionShape2D Collision => _collision ?? throw new ArgumentNullException(nameof(_collision));
 	[Export] private CollisionShape2D? _collision;
@@ -20,7 +19,7 @@ public partial class Interactable : Area2D
 		{
 			_highlighted = value;
 
-			if (Sprite.Material is ShaderMaterial shader)
+			if (sprite?.Material is ShaderMaterial shader)
 			{
 				shader.SetShaderParameter("enabled", _highlighted);
 			}

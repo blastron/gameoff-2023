@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://crgqdfglgm727"]
+
+[ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="1_3hwt0"]
+[ext_resource type="Texture2D" uid="uid://bpojtaj80apad" path="res://content/characters/test_tellus/interactable/standing.png" id="2_hna2v"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kwqef"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_hna2v")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p3dr2"]
+size = Vector2(98, 344)
+
+[node name="interactable" type="Area2D" node_paths=PackedStringArray("_collision")]
+script = ExtResource("1_3hwt0")
+_collision = NodePath("CollisionShape2D")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_kwqef")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-3, 13)
+shape = SubResource("RectangleShape2D_p3dr2")

@@ -1,16 +1,18 @@
 using Godot;
 using System;
-using System.Diagnostics;
 using System.Linq;
+using Godot.Collections;
 
 public partial class Walkaround : Node2D
 {
-
 	private Player Player => _player ?? throw new ArgumentNullException(nameof(_player));
 	[Export] private Player? _player;
 
-	private Room Room => _tempRoom ?? throw new ArgumentNullException(nameof(_tempRoom));
-	[Export] private Room? _tempRoom;
+	[Export] private Node2D? RoomContainer;
+
+	[Export] private Array<RoomData> rooms = new();
+
+	private Room? currentRoom;
 
 	// The parent game. Could be null if we're running this scene independently of a full game for testing purposes.
 	private NovelGame? parentGame;
@@ -33,8 +35,14 @@ public partial class Walkaround : Node2D
 		parentGame = this.GetTypedParent<NovelGame>();
 		camera = parentGame?.GetTypedChildren<Camera2D>().FirstOrDefault();
 		
-		// TODO: set this up when room is changed
-		Room.ChoiceInteracted += OnChoiceInteracted;
+		// Delete any Rooms in the scene, which should have only been in there as placeholders.
+		if (RoomContainer != null)
+		{
+			foreach (Node childNode in RoomContainer.GetChildren())
+			{
+				childNode.QueueFree();
+			}
+		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -67,6 +75,41 @@ public partial class Walkaround : Node2D
 		return parentGame == null || parentGame.currentMode == NovelGame.NarrativeMode.Walkaround;
 	}
 
+	public void LoadRoom(string roomName)
+	{
+		if (rooms.Count == 0)
+		{
+			GD.PushError("No rooms were configured.");
+			return;
+		}
+
+		for (int roomIndex = 0; roomIndex < rooms.Count; roomIndex++)
+		{
+			if (rooms[roomIndex].Name.Equals(roomName, StringComparison.OrdinalIgnoreCase))
+			{
+				GD.Print("Loading room \"" + roomName + "\" at index " + roomIndex + ".");
+				LoadRoom(roomIndex);
+				return;
+			}
+		}
+
+		// Couldn't find the room. As a fallback, load room 0.
+		GD.PushError("Unable to find room with ID \"" + roomName + "\". Falling back to room 0.");
+		LoadRoom(0);
+	}
+
+	private void LoadRoom(int roomIndex)
+	{
+		currentRoom?.QueueFree();
+
+		currentRoom = rooms[roomIndex].Scene?.Instantiate<Room>();
+		if (currentRoom != null)
+		{
+			(RoomContainer ?? this).AddChild(currentRoom);
+			currentRoom.ChoiceInteracted += OnChoiceInteracted;
+		}
+	}
+
 	private void OnChoiceInteracted(string choiceTag)
 	{
 		ChoiceInteracted?.Invoke(choiceTag);
@@ -74,14 +117,14 @@ public partial class Walkaround : Node2D
 
 	public void GetWalkingBounds(out float left, out float right)
 	{
-		left = Room.minWalkingBound;
-		right = Room.maxWalkingBound;
+		left = currentRoom?.minWalkingBound ?? 0;
+		right = currentRoom?.maxWalkingBound ?? 0;
 	}
 
 	private void GetCameraBounds(out float left, out float right)
 	{
-		left = Room.minBackgroundBound;
-		right = Room.maxBackgroundBound - screenWidth;
+		left = currentRoom?.minBackgroundBound ?? 0;
+		right = currentRoom?.maxBackgroundBound - screenWidth ?? 0;
 	}
 
 	private void ProcessCamera(double delta)
@@ -107,12 +150,16 @@ public partial class Walkaround : Node2D
 		float interactPosition = Player.Position.X;
 
 		Interactable? newTarget = null;
-		foreach (Node child in Room.GetChildren())
+		if (currentRoom != null)
 		{
-			if (child is Interactable interactable && interactable.PositionWithinBounds(interactPosition))
+			foreach (Interactable child in currentRoom.GetTypedChildren<Interactable>())
 			{
-				newTarget = interactable;
-				break;
+				bool hasMatchingChoice = parentGame?.HasTaggedChoice(child.Tag) ?? true;
+				if (hasMatchingChoice && child.PositionWithinBounds(interactPosition))
+				{
+					newTarget = child;
+					break;
+				}
 			}
 		}
 
@@ -123,7 +170,7 @@ public partial class Walkaround : Node2D
 				newTarget.Highlighted = true;
 			}
 
-			if (interactTarget != null)
+			if (interactTarget != null && IsInstanceValid(interactTarget))
 			{
 				interactTarget.Highlighted = false;
 			}

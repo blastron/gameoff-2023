@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://bleooxcehn1ky"]
+
+[ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="1_ra3dj"]
+[ext_resource type="Material" uid="uid://brw17ge6gort3" path="res://source/utilities/outline.tres" id="2_m57fm"]
+[ext_resource type="Texture2D" uid="uid://dyvdg2b504cog" path="res://content/characters/test_cat/sprite.png" id="2_wq8r5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0qkur"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_wq8r5")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q08i5"]
+size = Vector2(133, 228)
+
+[node name="Test Cat" type="Area2D" node_paths=PackedStringArray("sprite", "_collision")]
+script = ExtResource("1_ra3dj")
+sprite = NodePath("cat sprite")
+_collision = NodePath("cat collision")
+
+[node name="cat sprite" type="AnimatedSprite2D" parent="."]
+material = ExtResource("2_m57fm")
+sprite_frames = SubResource("SpriteFrames_0qkur")
+
+[node name="cat collision" type="CollisionShape2D" parent="."]
+position = Vector2(-3.5, -8)
+shape = SubResource("RectangleShape2D_q08i5")

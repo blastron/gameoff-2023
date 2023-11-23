@@ -3,14 +3,13 @@ using System;
 
 public partial class Room : Node2D
 {
-	private Sprite2D Background => _background ?? throw new ArgumentNullException(nameof(_background));
-	[Export] private Sprite2D? _background;
+	[Export] private Sprite2D? Background;
 	
 	public float minWalkingBound => 0;
-	public float maxWalkingBound => Background.GetRect().Size.X;
+	public float maxWalkingBound => Background?.GetRect().Size.X ?? 0;
 
 	public float minBackgroundBound => 0;
-	public float maxBackgroundBound => Background.GetRect().Size.X;
+	public float maxBackgroundBound => Background?.GetRect().Size.X ?? 0;
 	
 	public event Action<string>? ChoiceInteracted;
 

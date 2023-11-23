@@ -1,0 +1,31 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7yykc26dj1sr"]
+
+[ext_resource type="Script" path="res://source/walkaround/Room.cs" id="1_sy3si"]
+[ext_resource type="Texture2D" uid="uid://bs75i36e1s5v5" path="res://content/walkaround/rooms/test_outdoors/background.png" id="2_y1hyc"]
+[ext_resource type="PackedScene" uid="uid://bleooxcehn1ky" path="res://content/characters/test_cat/interactable.tscn" id="3_k3vys"]
+[ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="4_n1521"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4u28j"]
+size = Vector2(148, 274)
+
+[node name="Outdoor Test Scene" type="Node2D" node_paths=PackedStringArray("Background")]
+script = ExtResource("1_sy3si")
+Background = NodePath("Background")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_y1hyc")
+centered = false
+
+[node name="Test Cat" parent="." instance=ExtResource("3_k3vys")]
+position = Vector2(564, 578)
+Tag = "pet_cat"
+
+[node name="Door" type="Area2D" parent="." node_paths=PackedStringArray("_collision")]
+position = Vector2(1470, 526)
+script = ExtResource("4_n1521")
+_collision = NodePath("outdoor door collision")
+Tag = "enter_shop"
+
+[node name="outdoor door collision" type="CollisionShape2D" parent="Door"]
+position = Vector2(-5, -6)
+shape = SubResource("RectangleShape2D_4u28j")

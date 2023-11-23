@@ -1,10 +1,29 @@
-[gd_scene load_steps=6 format=3 uid="uid://dgomrackh3xil"]
+[gd_scene load_steps=13 format=3 uid="uid://dgomrackh3xil"]
 
 [ext_resource type="Script" path="res://source/NovelGame.cs" id="1_2ovye"]
 [ext_resource type="PackedScene" uid="uid://mkp50wt8nrpw" path="res://source/novel/DialogueReader.tscn" id="2_n7xnu"]
 [ext_resource type="Resource" uid="uid://bqtngoe2tmorx" path="res://content/stories/test/simple_test.ink" id="2_ytsed"]
 [ext_resource type="PackedScene" uid="uid://bnpaeagflke18" path="res://source/novel/NarrativeReader.tscn" id="3_5t30c"]
 [ext_resource type="PackedScene" uid="uid://dxn2mwneqo707" path="res://source/walkaround/Walkaround.tscn" id="3_vltg6"]
+[ext_resource type="PackedScene" uid="uid://d1iderst0ij1f" path="res://content/walkaround/rooms/unknown/room.tscn" id="4_2ammg"]
+[ext_resource type="Script" path="res://source/walkaround/RoomData.cs" id="5_a6572"]
+[ext_resource type="PackedScene" uid="uid://c7yykc26dj1sr" path="res://content/walkaround/rooms/test_outdoors/room.tscn" id="6_h42w6"]
+[ext_resource type="PackedScene" uid="uid://c1ctbq2ni33fj" path="res://content/walkaround/rooms/test_indoors/room.tscn" id="7_2u57j"]
+
+[sub_resource type="Resource" id="Resource_am67j"]
+script = ExtResource("5_a6572")
+Name = "unknown"
+Scene = ExtResource("4_2ammg")
+
+[sub_resource type="Resource" id="Resource_7a5cl"]
+script = ExtResource("5_a6572")
+Name = "test_outdoors"
+Scene = ExtResource("6_h42w6")
+
+[sub_resource type="Resource" id="Resource_dujrk"]
+script = ExtResource("5_a6572")
+Name = "test_indoors"
+Scene = ExtResource("7_2u57j")
 
 [node name="Root Node" type="Node2D" node_paths=PackedStringArray("_narrativeReader", "_dialogueReader", "_walkaround")]
 script = ExtResource("1_2ovye")
@@ -14,6 +33,7 @@ _dialogueReader = NodePath("Camera2D/Control/Dialogue Reader")
 _walkaround = NodePath("Walkaround")
 
 [node name="Walkaround" parent="." instance=ExtResource("3_vltg6")]
+rooms = [SubResource("Resource_am67j"), SubResource("Resource_7a5cl"), SubResource("Resource_dujrk")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0

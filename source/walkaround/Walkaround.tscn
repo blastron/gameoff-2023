@@ -1,15 +1,17 @@
 [gd_scene load_steps=4 format=3 uid="uid://dxn2mwneqo707"]
 
 [ext_resource type="Script" path="res://source/walkaround/Walkaround.cs" id="1_wxdi4"]
-[ext_resource type="PackedScene" uid="uid://bvb1axentb73o" path="res://source/walkaround/Room.tscn" id="2_bkude"]
+[ext_resource type="PackedScene" uid="uid://c7yykc26dj1sr" path="res://content/walkaround/rooms/test_outdoors/room.tscn" id="2_bf1y4"]
 [ext_resource type="PackedScene" uid="uid://dcp4285wy522f" path="res://source/walkaround/Player.tscn" id="3_nyiu4"]
 
-[node name="Root" type="Node2D" node_paths=PackedStringArray("_player", "_tempRoom")]
+[node name="Root" type="Node2D" node_paths=PackedStringArray("_player", "RoomContainer")]
 script = ExtResource("1_wxdi4")
 _player = NodePath("Player")
-_tempRoom = NodePath("Placeholder Room")
+RoomContainer = NodePath("Room Container")
 
-[node name="Placeholder Room" parent="." instance=ExtResource("2_bkude")]
+[node name="Room Container" type="Node2D" parent="."]
+
+[node name="Outdoor Test Scene" parent="Room Container" instance=ExtResource("2_bf1y4")]
 
 [node name="Player" parent="." instance=ExtResource("3_nyiu4")]
 position = Vector2(174, 621)

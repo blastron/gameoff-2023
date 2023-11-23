@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://c1ctbq2ni33fj"]
+
+[ext_resource type="Script" path="res://source/walkaround/Room.cs" id="1_cg5rk"]
+[ext_resource type="Texture2D" uid="uid://d1casousf1jxe" path="res://content/walkaround/rooms/test_indoors/background.png" id="2_m0m44"]
+[ext_resource type="Script" path="res://source/walkaround/Interactable.cs" id="3_cuthf"]
+[ext_resource type="Material" uid="uid://brw17ge6gort3" path="res://source/utilities/outline.tres" id="4_l1r0a"]
+[ext_resource type="Texture2D" uid="uid://bpojtaj80apad" path="res://content/characters/test_tellus/interactable/standing.png" id="5_y702i"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0l7eu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_y702i")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p2mfd"]
+size = Vector2(129, 377)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c8kh7"]
+size = Vector2(165, 354)
+
+[node name="Indoor Test Scene" type="Node2D" node_paths=PackedStringArray("Background")]
+script = ExtResource("1_cg5rk")
+Background = NodePath("Background")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_m0m44")
+centered = false
+
+[node name="Tellus" type="Area2D" parent="." node_paths=PackedStringArray("sprite", "_collision")]
+position = Vector2(1027, 434)
+script = ExtResource("3_cuthf")
+sprite = NodePath("tellus sprite")
+_collision = NodePath("tellus collision")
+Tag = "talk_shopkeeper"
+metadata/_edit_group_ = true
+
+[node name="tellus sprite" type="AnimatedSprite2D" parent="Tellus"]
+material = ExtResource("4_l1r0a")
+scale = Vector2(-1, 1)
+sprite_frames = SubResource("SpriteFrames_0l7eu")
+
+[node name="tellus collision" type="CollisionShape2D" parent="Tellus"]
+shape = SubResource("RectangleShape2D_p2mfd")
+
+[node name="Door" type="Area2D" parent="." node_paths=PackedStringArray("_collision")]
+position = Vector2(246, 391)
+script = ExtResource("3_cuthf")
+_collision = NodePath("door collision")
+Tag = "exit_shop"
+
+[node name="door collision" type="CollisionShape2D" parent="Door"]
+position = Vector2(-10.5, 4)
+shape = SubResource("RectangleShape2D_c8kh7")
