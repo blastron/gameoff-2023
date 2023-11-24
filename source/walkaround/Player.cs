@@ -3,7 +3,11 @@ using System;
 
 public partial class Player : Area2D
 {
-	[Export] private double MaxSpeed { get; set; } = 400;
+	[Export] private double MaxSpeed = 400;
+	[Export] private double Acceleration = 3000;
+	[Export] private double Deceleration = 5000;
+	private double currentVelocity = 0;
+	
 	[Export] private float interactOffset = 50;
 
 	private AnimatedSprite2D Sprite => _sprite ?? throw new ArgumentNullException(nameof(_sprite));
@@ -12,13 +16,13 @@ public partial class Player : Area2D
 	private CollisionShape2D Collision => _collision ?? throw new ArgumentNullException(nameof(_collision));
 	[Export] private CollisionShape2D? _collision;
 
-	public float InteractPosition => GlobalPosition.X + (interactOffset * (Sprite.FlipH ? -1 : 1));
+	public int Facing => Sprite.FlipH ? -1 : 1;
+
+	public float InteractPosition => GlobalPosition.X + (interactOffset * Facing);
 
 	private Walkaround? parentWalkaround;
 
 	public Vector2 ScreenSize; // ???
-
-	private double velocity = 0;
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -45,11 +49,28 @@ public partial class Player : Area2D
 		double inputDirection = (Input.IsActionPressed("move_left") ? -1 : 0) +
 								(Input.IsActionPressed("move_right") ? 1 : 0);
 		
-		float xPos = Position.X;
+		if (inputDirection == 0)
+		{
+			// Decelerate to a stop.
+			double frameDeceleration = Deceleration * deltaSeconds;
+			currentVelocity = Math.Max(Math.Abs(currentVelocity) - frameDeceleration, 0) * Math.Sign(currentVelocity);
+		}
+		else if (inputDirection * currentVelocity < 0)
+		{
+			// We want to change directions. Use the deceleration value to come to a stop before accelerating.
+			double frameDeceleration = Deceleration * deltaSeconds;
+			currentVelocity = Math.Max(Math.Abs(currentVelocity) - frameDeceleration, 0) * Math.Sign(currentVelocity);
+		}
+		else
+		{
+			// Accelerate to the target velocity.
+			double frameAcceleration = Acceleration * deltaSeconds;
+			currentVelocity = Math.Min(Math.Abs(currentVelocity) + frameAcceleration, MaxSpeed) *
+			                  Math.Sign(inputDirection);
+		}
 		
-		// todo: acceleration
-		velocity = inputDirection * MaxSpeed;
-		xPos += (float)(velocity * deltaSeconds);
+		float xPos = Position.X;
+		xPos += (float)(currentVelocity * deltaSeconds);
 
 		// Clamp to the sides of the screen.
 		if (GetWalkingBounds(out var leftBounds, out var rightBounds))
