@@ -8,6 +8,12 @@ public partial class Walkaround : Node2D
 	private Player Player => _player ?? throw new ArgumentNullException(nameof(_player));
 	[Export] private Player? _player;
 
+	// The amount of space on either side of the stage where the camera will remain stationary.
+	[Export] private double cameraPlayerGutter = 300;
+
+	[Export] private double cameraDeadZoneHalfWidth = 50;
+	private double cameraDeadZonePosition = 0;
+
 	[Export] private Node2D? RoomContainer;
 
 	[Export] private Array<RoomData> rooms = new();
@@ -19,6 +25,7 @@ public partial class Walkaround : Node2D
 	private NovelGame? parentGame;
 	
 	private Camera2D? camera;
+	
 
 	private float screenWidth;
 
@@ -123,6 +130,8 @@ public partial class Walkaround : Node2D
 		float? pointPos = currentRoom?.GetSpawnLocation(pointName);
 		Player.Position = new Vector2(pointPos ?? Player.Position.X, Player.Position.Y);
 
+		cameraDeadZonePosition = Player.Position.X;
+
 		if (pointPos == null)
 		{
 			GD.PushError("Unable to find spawn point with ID \"" + pointName + "\". Not moving.");
@@ -138,13 +147,13 @@ public partial class Walkaround : Node2D
 		ChoiceInteracted?.Invoke(choiceTag);
 	}
 
-	public void GetWalkingBounds(out float left, out float right)
+	public void GetWalkingBounds(out double left, out double right)
 	{
 		left = currentRoom?.minWalkingBound ?? 0;
 		right = currentRoom?.maxWalkingBound ?? 0;
 	}
 
-	private void GetCameraBounds(out float left, out float right)
+	private void GetCameraBounds(out double left, out double right)
 	{
 		left = currentRoom?.minBackgroundBound ?? 0;
 		right = currentRoom?.maxBackgroundBound - screenWidth ?? 0;
@@ -157,14 +166,43 @@ public partial class Walkaround : Node2D
 			return;
 		}
 		
-		// TEMP: center camera on player center
-		float cameraPosition = Player.Position.X - screenWidth / 2;
+		// We want to position the camera such that the player's horizontal position on the screen matches their
+		//   relative position on the stage itself, so that when the character is physically near the left side of the
+		//   room, they will be near the left side of the screen.
+		GetWalkingBounds(out double leftWalkingBounds, out double rightWalkingBounds);
+		GetCameraBounds(out double leftCameraBounds, out double rightCameraBounds);
+
+		// Adjust the walking bounds to account for the gutter on either side of the screen where we don't want the
+		//   camera to move.
+		// TODO: handle cases where the walking bounds are significantly smaller than the edge of the stage
+		leftWalkingBounds += cameraPlayerGutter;
+		rightWalkingBounds -= cameraPlayerGutter;
 		
-		// Clamp camera bounds within the screen bounds.
-		GetCameraBounds(out float leftCameraBounds, out float rightCameraBounds);
-		cameraPosition = Math.Clamp(cameraPosition, leftCameraBounds, rightCameraBounds);
+		// In order to minimize the amount of camera motion when the player is making small movements, track a dead zone
+		//   around the player that gets pushed around when the player moves.
+		double playerPosition = Player.Position.X;
+		if (Math.Abs(cameraDeadZonePosition - playerPosition) > cameraDeadZoneHalfWidth)
+		{
+			// TODO: Add some sort of easing when the dead zone starts to move, then have the dead zone recenter a bit
+			//   when the player stops.
+			cameraDeadZonePosition = playerPosition +
+			                         cameraDeadZoneHalfWidth * Math.Sign(cameraDeadZonePosition - playerPosition);
+		}
 		
-		camera.Position = new Vector2(cameraPosition, 0);
+		// Get the percentage along the horizontal movement track of the dead zone for conversion to camera coordinates.
+		double positionPercentage = leftWalkingBounds < rightWalkingBounds
+			? (cameraDeadZonePosition - leftWalkingBounds) / (rightWalkingBounds - leftWalkingBounds)
+			: 0.5f;
+		positionPercentage = Math.Clamp(positionPercentage, 0, 1);
+		
+		// Ease in/out to make the edges smoother.
+		const double exponent = 1.5;
+		positionPercentage = Math.Pow(positionPercentage, exponent) /
+		                     (Math.Pow(positionPercentage, exponent) + Math.Pow(1 - positionPercentage, exponent));
+
+		// Convert to camera coordinates.
+		double cameraPosition = (rightCameraBounds - leftCameraBounds) * positionPercentage + leftCameraBounds;
+		camera.Position = new Vector2((float)cameraPosition, 0);
 	}
 
 	private void SelectInteractable()

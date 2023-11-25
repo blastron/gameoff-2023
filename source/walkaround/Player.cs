@@ -18,6 +18,8 @@ public partial class Player : Area2D
 
 	public int Facing => Sprite.FlipH ? -1 : 1;
 
+	public double VelocityPercentage => currentVelocity / MaxSpeed;
+
 	public float InteractPosition => GlobalPosition.X + (interactOffset * Facing);
 
 	private Walkaround? parentWalkaround;
@@ -69,16 +71,16 @@ public partial class Player : Area2D
 			                  Math.Sign(inputDirection);
 		}
 		
-		float xPos = Position.X;
-		xPos += (float)(currentVelocity * deltaSeconds);
+		double xPos = Position.X;
+		xPos += currentVelocity * deltaSeconds;
 
 		// Clamp to the sides of the screen.
-		if (GetWalkingBounds(out var leftBounds, out var rightBounds))
+		if (GetWalkingBounds(out double leftBounds, out double rightBounds))
 		{
 			xPos = Math.Clamp(xPos, leftBounds, rightBounds);
 		}
 		
-		Position = new Vector2(xPos, Position.Y);
+		Position = new Vector2((float)xPos, Position.Y);
 
 
 		if (inputDirection != 0)
@@ -94,7 +96,7 @@ public partial class Player : Area2D
 		}
 	}
 
-	private bool GetWalkingBounds(out float left, out float right)
+	private bool GetWalkingBounds(out double left, out double right)
 	{
 		if (parentWalkaround == null)
 		{
@@ -105,13 +107,13 @@ public partial class Player : Area2D
 
 		parentWalkaround.GetWalkingBounds(out left, out right);
 
-		float boxRelativeCenter = Collision.Position.X;
+		double boxRelativeCenter = Collision.Position.X;
 		if (Sprite.FlipH)
 		{
 			boxRelativeCenter *= -1;
 		}
 		
-		float boxHalfWidth = Collision.Shape.GetRect().Size.X / 2;
+		double boxHalfWidth = Collision.Shape.GetRect().Size.X / 2;
 		left -= boxRelativeCenter - boxHalfWidth;
 		right -= boxRelativeCenter + boxHalfWidth;
 
